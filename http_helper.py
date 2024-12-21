@@ -1,3 +1,4 @@
+#!.venv/bin/python3
 import requests
 import tkinter as tk
 import Elements
@@ -36,7 +37,8 @@ class Document:
 
         self.encoding = url.get().encoding
 
-        print(self.mime)
+        if self.mime == 'text/html':
+            self.html = Elements.Element.from_html(self.text)
     
     def render(self):
         window = tk.Tk()
@@ -47,9 +49,12 @@ class Document:
 
         window.configure(background='white')
 
-        if self.mime == 'text/html':
-            text = tk.Text(window, wrap='word')
-            text.insert(tk.END, self.text)
-            text.pack()
+        self.html.render(window)
 
         window.mainloop()
+    
+    def getElementByTagName(self, tag: str) -> Elements.Element:
+        for child in self.html.children:
+            if child.type == tag:
+                return child
+        return None
